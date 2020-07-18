@@ -4,7 +4,11 @@
 # Security scanning
 # Test results storing
 # Modules/code/docker caching
-# Real jobs explained with environment updates/database migrations
+# Deploy of selected version (rollback for example) - needs a hack in CircleCI
+# Real jobs explained with:
+#   - environment updates
+#   - database migrations
+#   - versioned secrets
 
 version: 2.1
 workflows:
@@ -116,11 +120,15 @@ workflows:
           type: approval
           requires:
             - performance_tests_preprod
+      - mark_artifact_release:
+          requires: 
+            - prod_approval
       - deploy:
           requires:
-            - performance_tests_preprod
+            - mark_artifact_release
           environment: prod
           name: deploy_prod
+      # Assuming that on prod we cannot run functional/e2e tests - we can only run smoke test and then monitor logs/applications metrics
       - smoke_tests:
           requires:
             - deploy_prod
@@ -242,4 +250,11 @@ jobs:
       - image: circleci/node:14
     steps:
       - run: echo "Run smoke tests here for << parameters.environment >>"
+
+  mark_artifact_release:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "RC artifact should be changed to release artifact"
  
