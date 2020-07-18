@@ -2,7 +2,7 @@
 # Versioning/Tagging
 # Changelog
 # Security scanning
-
+# Test results storing
 
 version: 2.1
 workflows:
@@ -36,7 +36,7 @@ workflows:
       - preconditions_check:
           filters:
             branches:
-              only: /^pull\/.*/
+              only: /^feature\/.*/
       - lock_merge:
           requires:
             - preconditions_check
@@ -45,12 +45,10 @@ workflows:
             - lock_merge
           artifact: release-candidate
           name: build_rc
-      - deploy_to_dev:
+      - deploy:
           requires:
             - build_rc
-          filters:
-            branches:
-              only: /^pull\/.*/
+          target: dev
 #            
 #      - functional_tests:
 #          requires:
@@ -118,13 +116,16 @@ jobs:
       - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
       - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
 
-  deploy_to_dev:
+  deploy:
+    parameters:
+      target:
+        type: string
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
       - checkout
-      - run: echo "Deploy to dev environment"
+      - run: echo "Deploy to << parameters.target >> environment"
 
   preconditions_check:
     working_directory: ~/CobiroAngular
