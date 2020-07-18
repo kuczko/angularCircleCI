@@ -10,8 +10,8 @@ workflows:
   feature:
     filters:
       branches:
-        only: /^feature\/.*/
-        only: /^bugfix\/.*/
+        - only: /^feature\/.*/
+        - only: /^bugfix\/.*/
     parameters:
       artifact: snapshot
     jobs:
