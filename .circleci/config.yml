@@ -19,7 +19,7 @@ workflows:
 #          filters:
 #            branches:
 #              except: /^pull\/.*/
-      - build
+#      - build
 #          filters:
 #            branches:
 #              except: /^pull\/.*/
