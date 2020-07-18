@@ -98,12 +98,14 @@ workflows:
             - intergation_tests_stage
             - e2e_tests_stage
       - deploy:
-          environment: preprod
           requires:
             - preprod_approval
-#      - performance_tests:
-#          requires:
-#            - deploy_to_preprod
+          environment: preprod
+          name: deploy_preprod
+      - performance_tests:
+          requires:
+            - deploy_to_preprod
+          environment: preprod
 #      - e2e_tests:
 #          requires:
 #            - performance_tests
@@ -199,6 +201,16 @@ jobs:
       - run: echo "Run integration tests here for << parameters.environment >>"
 
   e2e_tests:
+    parameters:
+      environment:
+        type: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Run E2E tests here for << parameters.environment >>"
+
+  performance_tests:
     parameters:
       environment:
         type: string
