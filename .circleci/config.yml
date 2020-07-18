@@ -11,18 +11,18 @@ workflows:
     jobs:
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
-      - code_quality_check
-#          filters:
-#            branches:
-#              except: /^pull\/.*/
-      - unit_tests
-#          filters:
-#            branches:
-#              except: /^pull\/.*/
-#      - build
-#          filters:
-#            branches:
-#              except: /^pull\/.*/
+      - code_quality_check:
+          filters:
+            branches:
+              except: /^pull\/.*/
+      - unit_tests:
+          filters:
+            branches:
+              except: /^pull\/.*/
+      - build:
+          filters:
+            branches:
+              except: /^pull\/.*/
         
 
 #      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
@@ -98,10 +98,10 @@ jobs:
       - run: echo "Run unit tests here"
 
   build:
-#    parameters:
-#      artifact:
-#        type: string
-#        default: "snapshot"
+    parameters:
+      artifact:
+        type: string
+        default: "snapshot"
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
