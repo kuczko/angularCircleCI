@@ -68,8 +68,6 @@ workflows:
 
       ## Now there is a section which starts once new code is merged. At this point there is also rc artifact available
       - deploy:
-          requires:
-            - build
           target: stage
           name: deploy_stage
           filters:
