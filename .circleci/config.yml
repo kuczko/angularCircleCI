@@ -104,7 +104,7 @@ workflows:
           name: deploy_preprod
       - performance_tests:
           requires:
-            - deploy_to_preprod
+            - deploy_preprod
           environment: preprod
 #      - e2e_tests:
 #          requires:
