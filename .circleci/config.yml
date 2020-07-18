@@ -81,14 +81,14 @@ workflows:
             - e2e_tests
 
 jobs:
-  code_quality_check:
-    working_directory: ~/CobiroAngular
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      - run: echo "Run quality tests here"
-
+#  code_quality_check:
+#    working_directory: ~/CobiroAngular
+#    docker:
+#      - image: circleci/node:14
+#    steps:
+#      - checkout
+#      - run: echo "Run quality tests here"
+#
   unit_tests:
     working_directory: ~/CobiroAngular
     docker:
