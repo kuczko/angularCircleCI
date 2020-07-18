@@ -98,10 +98,10 @@ jobs:
       - run: echo "Run unit tests here"
 
   build:
-    parameters:
-      artifact:
-        type: string
-        default: "snapshot"
+#    parameters:
+#      artifact:
+#        type: string
+#        default: "snapshot"
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
