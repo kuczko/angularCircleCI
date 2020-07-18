@@ -121,7 +121,8 @@ workflows:
           requires:
             - performance_tests_preprod
       - mark_artifact_release:
-          requires: performance_tests_preprod
+          requires: 
+            - prod_approval
       - deploy:
           requires:
             - mark_artifact_release
