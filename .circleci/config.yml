@@ -112,35 +112,35 @@ jobs:
       - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
       - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
 
-  build_rc:
-    working_directory: ~/CobiroAngular
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      - run: echo "Run build here and upload it as release-candidate"
-
-  preconditions_check:
-    working_directory: ~/CobiroAngular
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      - run: echo "Check if PR preconditions( approvals,etc) are fulfilled"
-
-  lock_merge:
-    working_directory: ~/CobiroAngular
-    docker:
-      - image: circleci/node:14
-    steps:
-      - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
-      - run: echo "If not, release lock for that pipeline and set new lock"
-
-  unlock_merge:
-        working_directory: ~/CobiroAngular
-    docker:
-      - image: circleci/node:14
-    steps:
-      - run: echo "Check if do_merge job is finished and unset lock on merges"
-
-  
+#  build_rc:
+#    working_directory: ~/CobiroAngular
+#    docker:
+#      - image: circleci/node:14
+#    steps:
+#      - checkout
+#      - run: echo "Run build here and upload it as release-candidate"
+#
+#  preconditions_check:
+#    working_directory: ~/CobiroAngular
+#    docker:
+#      - image: circleci/node:14
+#    steps:
+#      - checkout
+#      - run: echo "Check if PR preconditions( approvals,etc) are fulfilled"
+#
+#  lock_merge:
+#    working_directory: ~/CobiroAngular
+#    docker:
+#      - image: circleci/node:14
+#    steps:
+#      - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
+#      - run: echo "If not, release lock for that pipeline and set new lock"
+#
+#  unlock_merge:
+#        working_directory: ~/CobiroAngular
+#    docker:
+#      - image: circleci/node:14
+#    steps:
+#      - run: echo "Check if do_merge job is finished and unset lock on merges"
+#
+#  
