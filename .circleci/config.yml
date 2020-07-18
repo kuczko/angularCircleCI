@@ -55,7 +55,7 @@ workflows:
           requires:
             - deploy_dev
           environment: dev
-          name: functional_test_dev
+          name: functional_tests_dev
       - integration_tests:
            requires:
              - deploy_dev
