@@ -31,7 +31,10 @@ workflows:
       - e2e_tests:
           requires:
             - performance_tests
-      - deploy_to_prod
+      - deploy_to_prod:
+          requires:
+            - performance_tests
+            - e2e_tests
 
 jobs:
   code_quality_check:
