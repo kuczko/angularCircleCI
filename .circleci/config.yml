@@ -29,6 +29,7 @@ workflows:
               only:
                 - /^feature\/.*/
                 - /^bugfix\/.*/
+          name: build_snapshot
 
       ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
       ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
@@ -43,9 +44,10 @@ workflows:
           requires:
             - lock_merge
           artifact: release-candidate
+          name: build_rc
       - deploy_to_dev:
           requires:
-            - build
+            - build_rc
           filters:
             branches:
               only: /^pull\/.*/
