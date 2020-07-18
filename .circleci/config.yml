@@ -1,38 +1,107 @@
-version: 2
+# TODO:
+# Versioning/Tagging
+# Changelog
+# Security scanning
+# Test results storing
+
+version: 2.1
 workflows:
-  version: 2
+  version: 2.1
   master:
     jobs:
+      ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
-      - code_quality_check
-      - unit_tests
-      - build
-      # Stage environment will be used to run tests
-      - deploy_to_stage:
+      - code_quality_check:
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
+      - unit_tests:
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
+      - build:
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
+          name: build_snapshot
+
+      ## Pipeline section to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have 
+      ## custom webhook called on PR creation. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
+      ## Special goal is to ensure that code which will be in trunk branch works
+      - preconditions_check:
+          filters:
+            branches:
+              only: /^feature\/.*/
+      - lock_merge:
           requires:
-            - build
+            - preconditions_check
+      - build:
+          requires:
+            - lock_merge
+          artifact: release-candidate
+          name: build_rc
+      - deploy:
+          requires:
+            - build_rc
+          target: dev
+          name: deploy_dev
+      - functional_tests:
+          requires:
+            - deploy_dev
+          environment: dev
+          name: functional_tests_dev
+      - integration_tests:
+           requires:
+             - deploy_dev
+           environment: dev
+           name: integration_tests_dev
+      - do_merge:
+           requires:
+             - functional_tests_dev
+             - integration_tests_dev
+
+      ## Now there is a section which starts once new code is merged. At this point there is also rc artifact available
+      - deploy:
+          target: stage
+          name: deploy_stage
           filters:
             branches:
               only: master
 
+      - functional_tests:
+          requires: 
+            - deploy_stage
+          environment: stage
+          name: functional_tests_stage
       - integration_tests:
           requires:
-            - deploy_to_stage
-      - e2e_tests_stage:
-          requires:
-            - deploy_to_stage
-      - deploy_to_preprod:
-          requires:
-            - integration_tests
-            - e2e_tests_stage
-      - performance_tests:
-          requires:
-            - deploy_to_preprod
-      - e2e_tests:
-          requires:
-            - performance_tests
-      - deploy_to_prod
-
+            - deploy_stage
+          environment: stage
+          name: intergation_tests_stage
+#      - e2e_tests_stage:
+#          requires:
+#            - deploy_to_stage
+#      - deploy_to_preprod:
+#          requires:
+#            - integration_tests
+#            - e2e_tests_stage
+#      - performance_tests:
+#          requires:
+#            - deploy_to_preprod
+#      - e2e_tests:
+#          requires:
+#            - performance_tests
+#      - deploy_to_prod:
+#          requires:
+#            - performance_tests
+#            - e2e_tests
+#
 jobs:
   code_quality_check:
     working_directory: ~/CobiroAngular
@@ -51,9 +120,72 @@ jobs:
       - run: echo "Run unit tests here"
 
   build:
+    parameters:
+      artifact:
+        type: string
+        default: "snapshot"
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
       - checkout
+      - run: echo "If artifact is release-candidate then do shallow merge with master"
       - run: echo "Run build here"
+      - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
+      - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
+
+  deploy:
+    parameters:
+      target:
+        type: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run: echo "Deploy to << parameters.target >> environment"
+
+  preconditions_check:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run: echo "Check if PR preconditions( approvals,etc) are fulfilled"
+
+  lock_merge:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
+      - run: echo "If not, release lock for that pipeline and set new lock"
+
+  do_merge:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Merge PR via Github API"
+
+  functional_tests:
+    parameters:
+      environment: 
+        type: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Run functional tests here for << parameters.environment >>"
+
+  integration_tests:
+    parameters:
+      environment: 
+        type: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Run integration tests here for << parameters.environment >>"
+
+  
