@@ -4,26 +4,22 @@
 # Security scanning
 
 
-version: 2
+version: 2.0
 workflows:
-  version: 2
-  master:
+  version: 2.0
+  feature:
+    filters:
+      branches:
+        only: /^feature\/.*/
+        only: /^bugfix\/.*/
+    parameters:
+      artifact: snapshot
     jobs:
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
-      - code_quality_check:
-          filters:
-            branches:
-              except: /^pull\/.*/
-      - unit_tests:
-          filters:
-            branches:
-              except: /^pull\/.*/
-      - build:
-          filters:
-            branches:
-              except: /^pull\/.*/
-        
+      - code_quality_check
+      - unit_tests
+      - build
 
 #      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
 #      ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
