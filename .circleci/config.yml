@@ -119,7 +119,6 @@ workflows:
       - deploy:
           requires:
             - performance_tests_preprod
-            - e2e_tests
           environment: prod
           name: deploy_prod
       - smoke_tests:
