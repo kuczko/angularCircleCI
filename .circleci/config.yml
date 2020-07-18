@@ -8,27 +8,27 @@ workflows:
       - unit_tests
       - build
       # Stage environment will be used to run tests
-      - deploy_to_stage
+      - deploy_to_stage:
           requires:
             - build
           filters:
             branches:
               only: master
 
-      - integration_tests
+      - integration_tests:
           requires:
             - deploy_to_stage
-      - e2e_tests_stage
+      - e2e_tests_stage:
           requires:
             - deploy_to_stage
-      - deploy_to_preprod
+      - deploy_to_preprod:
           requires:
             - integration_tests
             - e2e_tests_stage
-      - performance_tests
+      - performance_tests:
           requires:
             - deploy_to_preprod
-      - e2e_tests
+      - e2e_tests:
           requires:
             - performance_tests
       - deploy_to_prod
