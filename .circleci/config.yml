@@ -42,7 +42,10 @@ workflows:
       - deploy_to_dev:
           requires:
             - build
-          branches
+          filters:
+            branches:
+              only: /^pull\/.*/
+            
       - functional_tests:
           requires:
             - deploy_to_dev
