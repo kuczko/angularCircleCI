@@ -42,8 +42,7 @@ workflows:
       - build:
           requires:
             - lock_merge
-          parameters:
-            artifact: release-candidate
+          artifact: release-candidate
       - deploy_to_dev:
           requires:
             - build
