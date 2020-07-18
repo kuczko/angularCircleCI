@@ -25,70 +25,70 @@ workflows:
               except: /^pull\/.*/
         
 
-      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
-      ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
-      - preconditions_check:
-          filters:
-            branches:
-              only: /^pull\/.*/
-      - lock_merge:
-          requires:
-            - preconditions_check
-      - build:
-          requires:
-            - lock_merge
-          parameters:
-            artifact: release-candidate
-      - deploy_to_dev:
-          requires:
-            - build
-          filters:
-            branches:
-              only: /^pull\/.*/
-            
-      - functional_tests:
-          requires:
-            - deploy_to_dev
-      - integration_tests:
-
-      # Stage environment will be used to run tests
-      - deploy_to_stage:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
-
-      - integration_tests:
-          requires:
-            - deploy_to_stage
-      - e2e_tests_stage:
-          requires:
-            - deploy_to_stage
-      - deploy_to_preprod:
-          requires:
-            - integration_tests
-            - e2e_tests_stage
-      - performance_tests:
-          requires:
-            - deploy_to_preprod
-      - e2e_tests:
-          requires:
-            - performance_tests
-      - deploy_to_prod:
-          requires:
-            - performance_tests
-            - e2e_tests
-
-jobs:
-#  code_quality_check:
-#    working_directory: ~/CobiroAngular
-#    docker:
-#      - image: circleci/node:14
-#    steps:
-#      - checkout
-#      - run: echo "Run quality tests here"
+#      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
+#      ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
+#      - preconditions_check:
+#          filters:
+#            branches:
+#              only: /^pull\/.*/
+#      - lock_merge:
+#          requires:
+#            - preconditions_check
+#      - build:
+#          requires:
+#            - lock_merge
+#          parameters:
+#            artifact: release-candidate
+#      - deploy_to_dev:
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: /^pull\/.*/
+#            
+#      - functional_tests:
+#          requires:
+#            - deploy_to_dev
+#      - integration_tests:
 #
+#      # Stage environment will be used to run tests
+#      - deploy_to_stage:
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: master
+#
+#      - integration_tests:
+#          requires:
+#            - deploy_to_stage
+#      - e2e_tests_stage:
+#          requires:
+#            - deploy_to_stage
+#      - deploy_to_preprod:
+#          requires:
+#            - integration_tests
+#            - e2e_tests_stage
+#      - performance_tests:
+#          requires:
+#            - deploy_to_preprod
+#      - e2e_tests:
+#          requires:
+#            - performance_tests
+#      - deploy_to_prod:
+#          requires:
+#            - performance_tests
+#            - e2e_tests
+#
+jobs:
+  code_quality_check:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run: echo "Run quality tests here"
+
   unit_tests:
     working_directory: ~/CobiroAngular
     docker:
