@@ -10,8 +10,9 @@ workflows:
   feature:
     filters:
       branches:
-        - only: /^feature\/.*/
-        - only: /^bugfix\/.*/
+        only: 
+          - /^feature\/.*/
+          - /^bugfix\/.*/
     parameters:
       artifact: snapshot
     jobs:
@@ -20,18 +21,21 @@ workflows:
       - code_quality_check:
           filters:
             branches:
-              - only: /^feature\/.*/
-              - only: /^bugfix\/.*/
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
       - unit_tests:
           filters:
             branches:
-              - only: /^feature\/.*/
-              - only: /^bugfix\/.*/
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
       - build:
           filters:
             branches:
-              - only: /^feature\/.*/
-              - only: /^bugfix\/.*/
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
 
 #      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
 #      ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
