@@ -4,10 +4,14 @@
 # Security scanning
 
 
-version: 2.0
+version: 2
 workflows:
-  version: 2.0
-  master:
+  version: 2
+  feature:
+    filters:
+      branches:
+        - only: /^feature\/.*/
+        - only: /^bugfix\/.*/
     parameters:
       artifact: snapshot
     jobs:
