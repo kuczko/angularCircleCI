@@ -7,14 +7,7 @@
 version: 2
 workflows:
   version: 2
-  feature:
-    filters:
-      branches:
-        only: 
-          - /^feature\/.*/
-          - /^bugfix\/.*/
-    parameters:
-      artifact: snapshot
+  master:
     jobs:
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
