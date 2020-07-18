@@ -12,17 +12,17 @@ workflows:
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
       - code_quality_check:
-          filters:
-            branches:
-              except: /^pull\/.*/
+#          filters:
+#            branches:
+#              except: /^pull\/.*/
       - unit_tests:
-          filters:
-            branches:
-              except: /^pull\/.*/
+#          filters:
+#            branches:
+#              except: /^pull\/.*/
       - build:
-          filters:
-            branches:
-              except: /^pull\/.*/
+#          filters:
+#            branches:
+#              except: /^pull\/.*/
         
 
 #      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
