@@ -3,6 +3,8 @@
 # Changelog
 # Security scanning
 # Test results storing
+# Modules/code/docker caching
+# Real jobs explained with environment updates/database migrations
 
 version: 2.1
 workflows:
@@ -90,7 +92,8 @@ workflows:
           environment: stage
           name: e2e_tests_stage
       
-      ## Preprod part
+      ## Preprod part - I decided to put only performance tests here, other tests are already done. If infrastructure significantly differs or we want to be super-safe, we can
+      ## rerun other tests on preprod
       - preprod_approval:
           type: approval
           requires:
@@ -106,14 +109,25 @@ workflows:
           requires:
             - deploy_preprod
           environment: preprod
-#      - e2e_tests:
-#          requires:
-#            - performance_tests
-#      - deploy_to_prod:
-#          requires:
-#            - performance_tests
-#            - e2e_tests
-#
+          name: performance_tests_preprod
+
+       ## Production part - here we deploy to real production
+      - prod_approval:
+          type: approval
+          requires:
+            - performance_tests_preprod
+      - deploy:
+          requires:
+            - performance_tests
+            - e2e_tests
+          environment: prod
+          name: deploy_prod
+      - smoke_tests:
+          requires:
+            - deploy_prod
+          environment: prod
+          name: smoke_tests_prod
+
 jobs:
   code_quality_check:
     working_directory: ~/CobiroAngular
@@ -218,5 +232,15 @@ jobs:
     docker:
       - image: circleci/node:14
     steps:
-      - run: echo "Run E2E tests here for << parameters.environment >>"
+      - run: echo "Run performance tests here for << parameters.environment >>"
+
+  smoke_tests:
+    parameters:
+      environment:
+        type: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Run smoke tests here for << parameters.environment >>"
  
