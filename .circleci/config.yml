@@ -11,15 +11,15 @@ workflows:
     jobs:
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
-      - code_quality_check:
+      - code_quality_check
 #          filters:
 #            branches:
 #              except: /^pull\/.*/
-      - unit_tests:
+      - unit_tests
 #          filters:
 #            branches:
 #              except: /^pull\/.*/
-      - build:
+      - build
 #          filters:
 #            branches:
 #              except: /^pull\/.*/
