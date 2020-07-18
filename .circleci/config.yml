@@ -172,7 +172,8 @@ jobs:
 
   functional_tests:
     parameters:
-      environment: string
+      environment: 
+        type: string
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
@@ -181,7 +182,8 @@ jobs:
 
   integration_tests:
     parameters:
-      environment: string
+      environment: 
+        type: string
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
