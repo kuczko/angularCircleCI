@@ -31,8 +31,9 @@ workflows:
                 - /^bugfix\/.*/
           name: build_snapshot
 
-      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
-      ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
+      ## Pipeline section to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have 
+      ## custom webhook called on PR creation. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
+      ## Special goal is to ensure that code which will be in trunk branch works
       - preconditions_check:
           filters:
             branches:
@@ -49,23 +50,42 @@ workflows:
           requires:
             - build_rc
           target: dev
-#            
-#      - functional_tests:
-#          requires:
-#            - deploy_to_dev
-#      - integration_tests:
-#
-#      # Stage environment will be used to run tests
-#      - deploy_to_stage:
-#          requires:
-#            - build
-#          filters:
-#            branches:
-#              only: master
-#
-#      - integration_tests:
-#          requires:
-#            - deploy_to_stage
+          name: deploy_dev
+      - functional_tests:
+          requires:
+            - deploy_dev
+          environment: dev
+          name: functional_test_dev
+      - integration_tests:
+           requires:
+             - deploy_dev
+           environment: dev
+           name: integration_tests_dev
+      - do_merge:
+           requires:
+             - functional_tests_dev
+             - integration_tests_dev
+
+      ## Now there is a section which starts once new code is merged. At this point there is also rc artifact available
+      - deploy:
+          requires:
+            - build
+          target: stage
+          name: deploy_stage
+          filters:
+            branches:
+              only: master
+
+      - functional_tests:
+          requires: 
+            - deploy_stage
+          environment: stage
+          name: functional_tests_stage
+      - integration_tests:
+          requires:
+            - deploy_stage
+          environment: stage
+          name: intergation_tests_stage
 #      - e2e_tests_stage:
 #          requires:
 #            - deploy_to_stage
@@ -143,11 +163,29 @@ jobs:
       - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
       - run: echo "If not, release lock for that pipeline and set new lock"
 
-#  unlock_merge:
-#        working_directory: ~/CobiroAngular
-#    docker:
-#      - image: circleci/node:14
-#    steps:
-#      - run: echo "Check if do_merge job is finished and unset lock on merges"
-#
-#  
+  do_merge:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Merge PR via Github API"
+
+  functional_tests:
+    parameters:
+      environment: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Run functional tests here for << parameters.environment >>"
+
+  integration_tests:
+    parameters:
+      environment: string
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Run integration tests here for << parameters.environment >>"
+
+  
