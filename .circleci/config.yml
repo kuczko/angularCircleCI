@@ -1,12 +1,53 @@
+# TODO:
+# Versioning/Tagging
+# Changelog
+# Security scanning
+
+
 version: 2
 workflows:
   version: 2
   master:
     jobs:
+      ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
-      - code_quality_check
-      - unit_tests
-      - build
+      - code_quality_check:
+          filters:
+            branches:
+              except: /^pull\/.*/
+      - unit_tests:
+          filters:
+            branches:
+              except: /^pull\/.*/
+      - build:
+          filters:
+            branches:
+              except: /^pull\/.*/
+        
+
+      ## Pipeline to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have custom
+      ## webhook called on PR cration. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
+      - preconditions_check:
+          filters:
+            branches:
+              only: /^pull\/.*/
+      - lock_merge:
+          requires:
+            - preconditions_check
+      - build:
+          requires:
+            - lock_merge
+          parameters:
+            artifact: release-candidate
+      - deploy_to_dev:
+          requires:
+            - build
+          branches
+      - functional_tests:
+          requires:
+            - deploy_to_dev
+      - integration_tests:
+
       # Stage environment will be used to run tests
       - deploy_to_stage:
           requires:
@@ -54,9 +95,49 @@ jobs:
       - run: echo "Run unit tests here"
 
   build:
+    parameters:
+      artifact:
+        type: string
+        default: "snapshot"
     working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
       - checkout
+      - run: echo "If artifact is release-candidate then do shallow merge with master"
       - run: echo "Run build here"
+      - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
+      - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
+
+  build_rc:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run: echo "Run build here and upload it as release-candidate"
+
+  preconditions_check:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run: echo "Check if PR preconditions( approvals,etc) are fulfilled"
+
+  lock_merge:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
+      - run: echo "If not, release lock for that pipeline and set new lock"
+
+  unlock_merge:
+        working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: echo "Check if do_merge job is finished and unset lock on merges"
+
+  
