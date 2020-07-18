@@ -4,9 +4,9 @@
 # Security scanning
 
 
-version: 2
+version: 2.1
 workflows:
-  version: 2
+  version: 2.1
   master:
     jobs:
       ## Pipeline to be executed for each commit to the branch
