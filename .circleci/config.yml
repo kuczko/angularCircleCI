@@ -79,14 +79,14 @@ workflows:
              - deploy_dev
            environment: dev
            name: integration_tests_dev
-      - preconditons_check:
+      - preconditions_check:
            requires:
              - functional_tests_dev
              - integration_tests_dev
-           name: precoditions_check_final               
+           name: preconditions_check_final               
       - do_merge:
            requires:
-             - precoditions_check_final
+             - preconditions_check_final
 
       ### Now there is a section which starts once new code is merged. At this point there is also rc artifact available
       ## Staging part
