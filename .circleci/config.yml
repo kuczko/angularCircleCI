@@ -10,6 +10,18 @@
 #   - database migrations
 #   - versioned secrets
 
+
+# There are 3 separate flows below:
+#
+# Flow one is executed for feature/bugfix branches and it aims only to give feedback to developer that his code looks fine and compiles. I assumed that there is no need to have
+# "infrastructure per feature" here, so there is no deployment and more complex testing.
+#
+# Flow two is executed when feature/bugfix branch is going to be merged to master branch. Here we need to have tests which will ensure that this code is safe to be merged and also
+# maintain merge queue. My assumption here is that we do not want to pollute master branch and staging environment with faulty application, so we are doing test to avoid it.
+#
+# Flow three is executed when pull request is actually merged (by flow two). Here we are starting flow to deploy throught testing, preproduction to production environment.
+# And again i had to do some assumptions - we deploy to stage immediately after merging, then we want to deploy to preprod/prod in controlled way - with approvals.
+
 version: 2.1
 workflows:
   version: 2.1
@@ -67,10 +79,14 @@ workflows:
              - deploy_dev
            environment: dev
            name: integration_tests_dev
-      - do_merge:
+      - preconditions_check:
            requires:
              - functional_tests_dev
              - integration_tests_dev
+           name: preconditions_check_final               
+      - do_merge:
+           requires:
+             - preconditions_check_final
 
       ### Now there is a section which starts once new code is merged. At this point there is also rc artifact available
       ## Staging part
@@ -184,7 +200,7 @@ jobs:
       - image: circleci/node:14
     steps:
       - checkout
-      - run: echo "Check if PR preconditions( approvals,etc) are fulfilled"
+      - run: echo "Check if PR preconditions( approvals,etc) are fulfilled. Additinally check if PR has not changed during our flow - if there are approvals removed, code added etc"
 
   lock_merge:
     working_directory: ~/CobiroAngular
