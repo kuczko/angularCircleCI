@@ -36,24 +36,27 @@ workflows:
                 - /^bugfix\/.*/
                 - /^pull\/.*/
                 - master
-      - list_files:
-          requires:
-            - code_checkout   
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
       - code_quality_check:
+          requires:
+            - code_checkout
           filters:
             branches:
               only:
                 - /^feature\/.*/
                 - /^bugfix\/.*/
       - unit_tests:
+          requires:
+            - code_checkout
           filters:
             branches:
               only:
                 - /^feature\/.*/
                 - /^bugfix\/.*/
       - build:
+          requires:
+            - code_checkout
           filters:
             branches:
               only:
@@ -165,12 +168,16 @@ workflows:
 
 jobs:
   code_quality_check:
-    working_directory: ~/CobiroAngular
+    working_directory: ~/src
     docker:
       - image: circleci/node:14
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/
       - run: echo "Run quality tests here"
+      - run: ls -al
+      - run: pwd
+      - run: ls -al ../
 
   unit_tests:
     working_directory: ~/CobiroAngular
