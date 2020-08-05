@@ -182,8 +182,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run quality tests here"
-      - run: ls -al
-      - run: ls -al ~/
 
   unit_tests:
     working_directory: ~/src
@@ -244,8 +242,6 @@ jobs:
           at: ~/
       - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
       - run: echo "If not, release lock for that pipeline and set new lock"
-      - run: ls -al ~/src/
-      - run: ls -al ~/preconditions/
 
   local_merge:
     working_directory: ~/src
@@ -343,7 +339,6 @@ jobs:
       - image: circleci/node:14
     steps:
       - checkout
-      - run: ls -l ~/src
       - restore_cache:
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
@@ -351,7 +346,6 @@ jobs:
             - node-v1-{{ .Branch }}-
             - node-v1-
       # Assuming that all tests will require modules we are installing them at the beginning
-      - run: ls -l ~/src
       - run: npm install
       - save_cache:
            paths:
