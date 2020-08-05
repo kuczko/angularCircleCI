@@ -76,9 +76,12 @@ workflows:
       - lock_merge:
           requires:
             - preconditions_check
-      - build:
+      - local_merge:
           requires:
             - lock_merge
+      - build:
+          requires:
+            - local_merge
           artifact: release-candidate
           name: build_rc
       - deploy:
@@ -204,10 +207,10 @@ jobs:
       - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
 
   deploy:
+    working_directory: ~/src
     parameters:
       environment:
         type: string
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
@@ -240,68 +243,94 @@ jobs:
       - run: ls -al ~/src/
       - run: ls -al ~/preconditions/
 
-  do_merge:
-    working_directory: ~/CobiroAngular
+  local_merge:
+    working_directory: ~/src
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
+      - run: echo "Merge PR to locally"
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - src
+  do_merge:
+    working_directory: ~/src
+    docker:
+      - image: circleci/node:14
+    steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Merge PR via Github API"
 
   functional_tests:
+    working_directory: ~/src
     parameters:
       environment: 
         type: string
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Run functional tests here for << parameters.environment >>"
 
   integration_tests:
+    working_directory: ~/src
     parameters:
       environment: 
         type: string
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Run integration tests here for << parameters.environment >>"
 
   e2e_tests:
+    working_directory: ~/src
     parameters:
       environment:
         type: string
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Run E2E tests here for << parameters.environment >>"
 
   performance_tests:
+    working_directory: ~/src
     parameters:
       environment:
         type: string
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Run performance tests here for << parameters.environment >>"
 
   smoke_tests:
+    working_directory: ~/src
     parameters:
       environment:
         type: string
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Run smoke tests here for << parameters.environment >>"
 
   mark_artifact_release:
-    working_directory: ~/CobiroAngular
+    working_directory: ~/src
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "RC artifact should be changed to release artifact"
 
   code_checkout:
