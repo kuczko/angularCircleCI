@@ -304,6 +304,8 @@ jobs:
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/CobiroAngular
       - run: ls -al
       - run: pwd
       - run: ls -al ../
