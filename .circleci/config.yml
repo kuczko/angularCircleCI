@@ -343,6 +343,7 @@ jobs:
       - image: circleci/node:14
     steps:
       - checkout
+      - run: ls -l ~/src
       - restore_cache:
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
@@ -350,6 +351,7 @@ jobs:
             - node-v1-{{ .Branch }}-
             - node-v1-
       # Assuming that all tests will require modules we are installing them at the beginning
+      - run: ls -l ~/src
       - run: npm install
       - persist_to_workspace:
           root: ~/
