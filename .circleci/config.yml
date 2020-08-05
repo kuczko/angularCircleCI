@@ -68,6 +68,8 @@ workflows:
       ## custom webhook called on PR creation. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
       ## Special goal is to ensure that code which will be in trunk branch works
       - preconditions_check:
+          requires:
+            - code_checkout
           filters:
             branches:
               only: /^pull\/.*/
