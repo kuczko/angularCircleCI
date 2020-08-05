@@ -341,6 +341,14 @@ jobs:
       - image: circleci/node:14
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-v1-{{ .Branch }}-
+            - node-v1-
+      # Assuming that all tests will require modules we are installing them at the beginning
+      - run: npm install
       - persist_to_workspace:
           root: ~/
           paths:
