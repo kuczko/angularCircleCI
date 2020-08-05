@@ -287,7 +287,7 @@ jobs:
       - run: echo "RC artifact should be changed to release artifact"
 
   code_checkout:
-    working_directory: ~/CobiroAngular
+    working_directory: ~/src
     docker:
       - image: circleci/node:14
     steps:
@@ -300,6 +300,7 @@ jobs:
             - CobiroAngular
 
   list_files:
+    working_directory: ~/
     docker:
       - image: circleci/node:14
     steps:
