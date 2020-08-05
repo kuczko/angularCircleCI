@@ -111,6 +111,8 @@ workflows:
       ### Now there is a section which starts once new code is merged. At this point there is also rc artifact available
       ## Staging part
       - deploy:
+          requires:
+            - code_checkout
           environment: stage
           name: deploy_stage
           filters:
