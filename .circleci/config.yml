@@ -297,7 +297,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - ~/CobiroAngular
+            - CobiroAngular
 
   list_files:
     docker:
