@@ -182,6 +182,8 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run quality tests here"
+      - run: ls -al
+      - run: ls -al ~/
 
   unit_tests:
     working_directory: ~/src
