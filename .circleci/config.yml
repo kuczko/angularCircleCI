@@ -242,8 +242,6 @@ jobs:
           at: ~/
       - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
       - run: echo "If not, release lock for that pipeline and set new lock"
-      - run: ls -al ~/src/
-      - run: ls -al ~/preconditions/
 
   local_merge:
     working_directory: ~/src
@@ -341,6 +339,18 @@ jobs:
       - image: circleci/node:14
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-v1-{{ .Branch }}-
+            - node-v1-
+      # Assuming that all tests will require modules we are installing them at the beginning
+      - run: npm install
+      - save_cache:
+           paths:
+             - ~/src/node_modules  # location depends on npm version
+           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - persist_to_workspace:
           root: ~/
           paths:
