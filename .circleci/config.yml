@@ -305,7 +305,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: ls -al
+      - run: ls -al CobiroAngular
       - run: pwd
       - run: ls -al ../
       - run: ls -al ../project/
