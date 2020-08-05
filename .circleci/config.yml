@@ -36,7 +36,9 @@ workflows:
                 - /^bugfix\/.*/
                 - /^pull\/.*/
                 - master
-      - list_files
+      - list_files:
+          requires:
+            - code_checkout   
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
       - code_quality_check:
