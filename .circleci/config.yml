@@ -175,28 +175,27 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run quality tests here"
-      - run: ls -al
-      - run: pwd
-      - run: ls -al ../
 
   unit_tests:
-    working_directory: ~/CobiroAngular
+    working_directory: ~/src
     docker:
       - image: circleci/node:14
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/
       - run: echo "Run unit tests here"
 
   build:
+    working_directory: ~/src
     parameters:
       artifact:
         type: string
         default: "snapshot"
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/
       - run: echo "If artifact is release-candidate then do shallow merge with master"
       - run: echo "Run build here"
       - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
@@ -214,20 +213,31 @@ jobs:
       - run: echo "Deploy to << parameters.environment >> environment"
 
   preconditions_check:
-    working_directory: ~/CobiroAngular
+    working_directory: ~/
     docker:
       - image: circleci/node:14
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/
       - run: echo "Check if PR preconditions( approvals,etc) are fulfilled. Additinally check if PR has not changed during our flow - if there are approvals removed, code added etc"
+      - run: mkdir preconditions
+      - run: touch precinditions/pr-details
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - preconditions
 
   lock_merge:
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
+      - attach_workspace:
+          at: ~/
       - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
       - run: echo "If not, release lock for that pipeline and set new lock"
+      - run: ls -al
+      - run: ls -al src/
+      - run: ls -al preconditions/
 
   do_merge:
     working_directory: ~/CobiroAngular
@@ -299,21 +309,7 @@ jobs:
       - image: circleci/node:14
     steps:
       - checkout
-      - run: ls -al
-      - run: ls -al ../
       - persist_to_workspace:
           root: ~/
           paths:
             - src
-
-  list_files:
-    working_directory: ~/
-    docker:
-      - image: circleci/node:14
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: ls -al src
-      - run: pwd
-      - run: ls -al ../
-      - run: ls -al ../project/
