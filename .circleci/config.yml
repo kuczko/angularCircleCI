@@ -295,17 +295,16 @@ jobs:
       - run: ls -al
       - run: ls -al ../
       - persist_to_workspace:
-          root: .
+          root: 
           paths:
-            - .
+            - ~/CobiroAngular
 
   list_files:
-    working_directory: ~/CobiroAngular
     docker:
       - image: circleci/node:14
     steps:
       - attach_workspace:
-          at: ~/CobiroAngular
+          at: ~/
       - run: ls -al
       - run: pwd
       - run: ls -al ../
