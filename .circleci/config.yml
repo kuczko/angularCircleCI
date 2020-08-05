@@ -222,7 +222,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Check if PR preconditions( approvals,etc) are fulfilled. Additinally check if PR has not changed during our flow - if there are approvals removed, code added etc"
-      - run: mkdir preconditions
+      - run: mkdir -p preconditions
       - run: touch preconditions/pr-details
       - persist_to_workspace:
           root: ~/
