@@ -27,6 +27,16 @@ workflows:
   version: 2.1
   master:
     jobs:
+      ## We checkout code once
+      - code_checkout:
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
+                - /^pull\/.*/
+                - master
+      - list_files
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
       - code_quality_check:
@@ -273,4 +283,17 @@ jobs:
       - image: circleci/node:14
     steps:
       - run: echo "RC artifact should be changed to release artifact"
- 
+
+  code_checkout:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+
+  list_files:
+    working_directory: ~/CobiroAngular
+    docker:
+      - image: circleci/node:14
+    steps:
+      - run: ls -al
