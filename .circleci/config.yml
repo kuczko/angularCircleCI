@@ -207,6 +207,9 @@ jobs:
       - run: echo "Run build here"
       - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
       - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
+      - setup_remote_docker: 
+         docker_layer_caching: true 
+      - run: echo "docker build here"
 
   deploy:
     working_directory: ~/src
