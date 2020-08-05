@@ -34,7 +34,7 @@ workflows:
               only:
                 - /^feature\/.*/
                 - /^bugfix\/.*/
-                - /^pull\/.*/
+                - /^pullX\/.*/
                 - master
       ## Pipeline to be executed for each commit to the branch
       # We will run those 3 in parallel
@@ -72,7 +72,7 @@ workflows:
             - code_checkout
           filters:
             branches:
-              only: /^pull\/.*/
+              only: /^pullX\/.*/
       - lock_merge:
           requires:
             - preconditions_check
