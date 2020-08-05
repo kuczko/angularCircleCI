@@ -295,7 +295,7 @@ jobs:
       - run: ls -al
       - run: ls -al ../
       - persist_to_workspace:
-          root: 
+          root: ~/
           paths:
             - ~/CobiroAngular
 
