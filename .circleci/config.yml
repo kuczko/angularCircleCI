@@ -89,14 +89,19 @@ workflows:
             - build_rc
           environment: dev
           name: deploy_dev
+      - smoke_tests:
+          requires:
+            - build_rc
+          environment: dev
+          name: smoke_tests_dev
       - functional_tests:
           requires:
-            - deploy_dev
+            - smoke_tests_dev
           environment: dev
           name: functional_tests_dev
       - integration_tests:
            requires:
-             - deploy_dev
+             - smoke_tests_dev
            environment: dev
            name: integration_tests_dev
       - preconditions_check:
@@ -118,19 +123,24 @@ workflows:
           filters:
             branches:
               only: master
+      - smoke_tests:
+          requires:
+            - deploy_stage
+          environment: stage
+          name: smoke_tests_stage
       - functional_tests:
           requires: 
-            - deploy_stage
+            - smoke_tests_stage
           environment: stage
           name: functional_tests_stage
       - integration_tests:
           requires:
-            - deploy_stage
+            - smoke_tests_stage
           environment: stage
           name: intergation_tests_stage
       - e2e_tests:
           requires:
-            - deploy_stage
+            - smoke_tests_stage
           environment: stage
           name: e2e_tests_stage
       
@@ -147,9 +157,14 @@ workflows:
             - preprod_approval
           environment: preprod
           name: deploy_preprod
+      - smoke_tests:
+          requires:
+            deploy_preprod
+        environment: preprod
+        name: smoke_tests_preprod
       - performance_tests:
           requires:
-            - deploy_preprod
+            - smoke_tests_preprod
           environment: preprod
           name: performance_tests_preprod
 
