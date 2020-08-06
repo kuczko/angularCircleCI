@@ -68,7 +68,8 @@ workflows:
       # - one is to run it as local docker-compose setup bringing up whole application and support components (databases etc) and testing this way
       # - second is to use real environment - it might be static or brought up on demand.
       - acceptance_tests:
-          requires: build_snapshot
+          requires: 
+            - build_snapshot
           filters:
             branches:
               only:
