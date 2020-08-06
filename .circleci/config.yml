@@ -150,6 +150,7 @@ workflows:
             - smoke_tests_stage
           environment: stage
           name: intergation_tests_stage
+      # CircleCI allows to run it better with real tests - explained in README
       - e2e_tests_pack1:
           requires:
             - smoke_tests_stage

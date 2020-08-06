@@ -7,8 +7,10 @@ Things to consider are:
   - Added workspace saving to not clone and apply git diff at each job step
   - Added npm modules caching
   - Added docker cache (commented out as plan does not support it)
-  - Added example of running parallel tests scenario packs for e2e tests - this can be used for each type of tests which are too long to be accepted.
- 
+  - Added example of running parallel tests scenario packs for e2e tests - this can be used for each type of tests which are too long to be accepted. **Found that CircleCi has
+    a support for this, so it can load balance tests based on last time to run them, making grouping them automated to finish them fastest as possible, using paralleinsm and 
+    circleci tests split --split-by=timings - this sounds really promising**
+
 - how would you notify the team if something went wrong?
   - Added slack notification for each job. Better version would be to create custom job, which would notify person merging change/making commit - it would limit spam on the 
     notification channel.
@@ -31,9 +33,14 @@ Things to consider are:
   - Added smoke tests after each deployment 
 
 - please add a job for acceptance tests
+  - Added acceptance test
 
 - assuming that acceptance test can run 1 hour but developers can push multiple times a day, how do you solve a problem of running these tests?
-
+  - We can run them locally on pipeline runner as in my acceptance_tests proposal or on dynamic environments - but if we are using some paid services it might cause singificant cost
+    to run heavy tasks there. In order to avoid those costs we can improve strategy to cancel pipeline if there is new pipeline related to same branch and start them from scratch
+    on new version(Auto-cancel redundant builds option in CircleCI), or finish current tests(to give developer any feedback faster), but skip next ones except last (technically skip
+    job pipeline to branch which was not started yet). 
+    
 - What is your zero down time deployment strategy?
   - Assuming that application can run in parallel and database updates are non-blocking, then we can just bring new application, check if it runs(smoke tests?) and replace target on
     load balancer (blue/green deployment). This can be also improved by using canary deployment strategy - redirecting only part of traffic to new version, while still running old 
