@@ -374,6 +374,7 @@ jobs:
           root: ~/
           paths:
             - src
+      - run: ls /asda
       - slack/notify-on-failure
 
 orbs:
