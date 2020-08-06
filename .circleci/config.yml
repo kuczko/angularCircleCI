@@ -28,7 +28,6 @@ workflows:
   master:
     jobs:
       ## We checkout code once
-      - slack/notify-on-failure
       - code_checkout:
           filters:
             branches:
@@ -375,6 +374,7 @@ jobs:
           root: ~/
           paths:
             - src
+      - slack/notify-on-failure
 
 orbs:
   slack: circleci/slack@3.4.2
