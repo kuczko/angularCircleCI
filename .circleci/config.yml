@@ -63,7 +63,19 @@ workflows:
                 - /^feature\/.*/
                 - /^bugfix\/.*/
           name: build_snapshot
-
+      
+      # This is the best moment to run acceptance tests to give feedback to developer as soon as possible, before he/she tries to merge. We can run those tests in two ways:
+      # - one is to run it as local docker-compose setup bringing up whole application and support components (databases etc) and testing this way
+      # - second is to use real environment - it might be static or brought up on demand.
+      - acceptance_tests:
+          requires: 
+            - build_snapshot
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^bugfix\/.*/
+      
       ## Pipeline section to be executed for each PR to master branch - as far as I see CircleCI is missing thie feature, but there must be possible workaround to just call have 
       ## custom webhook called on PR creation. If it is complicated, webhook may point at AWS Lambda which will then call CircleCI API
       ## Special goal is to ensure that code which will be in trunk branch works
@@ -138,6 +150,7 @@ workflows:
             - smoke_tests_stage
           environment: stage
           name: intergation_tests_stage
+      # CircleCI allows to run it better with real tests - explained in README
       - e2e_tests_pack1:
           requires:
             - smoke_tests_stage
@@ -229,12 +242,22 @@ jobs:
           at: ~/
       - run: echo "If artifact is release-candidate then do shallow merge with master"
       - run: echo "Run build here"
-      - run: echo "If artifact is snapshot - do not upload artifact, it is only for build test"
-      - run: echo "If artifact is release-candidate, do upload artifact to artifact registry"
+      - run: echo "Upload artifact to artifact registry"
       # Commenting out, docker caching is not availabe in CircleCI free plan 
       #- setup_remote_docker: 
       #   docker_layer_caching: true 
       - run: echo "docker build here"
+      - slack/notify-on-failure
+
+  acceptance_tests:
+    working_directory: ~/src
+    docker:
+      - image: circleci/node:14
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: echo "If required start local environment or real one and deploy app there"
+      - run: echo "Run acceptance tests here"
       - slack/notify-on-failure
 
   deploy:
