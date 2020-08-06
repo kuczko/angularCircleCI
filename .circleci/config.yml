@@ -159,7 +159,7 @@ workflows:
           name: deploy_preprod
       - smoke_tests:
           requires:
-            deploy_preprod
+            - deploy_preprod
         environment: preprod
         name: smoke_tests_preprod
       - performance_tests:
