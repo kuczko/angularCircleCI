@@ -138,11 +138,17 @@ workflows:
             - smoke_tests_stage
           environment: stage
           name: intergation_tests_stage
-      - e2e_tests:
+      - e2e_tests_pack1:
           requires:
             - smoke_tests_stage
           environment: stage
-          name: e2e_tests_stage
+          name: e2e_tests_stage_1
+       - e2e_tests_pack2:
+          requires:
+            - smoke_tests_stage
+          environment: stage
+          name: e2e_tests_stage_2
+
       
       ## Preprod part - I decided to put only performance tests here, other tests are already done. If infrastructure significantly differs or we want to be super-safe, we can
       ## rerun other tests on preprod
@@ -151,7 +157,8 @@ workflows:
           requires:
             - functional_tests_stage
             - intergation_tests_stage
-            - e2e_tests_stage
+            - e2e_tests_stage_1
+            - e2e_tests_stage_2
       - deploy:
           requires:
             - preprod_approval
@@ -318,7 +325,7 @@ jobs:
       - run: echo "Run integration tests here for << parameters.environment >>"
       - slack/notify-on-failure
 
-  e2e_tests:
+  e2e_tests_pack1:
     working_directory: ~/src
     parameters:
       environment:
@@ -328,8 +335,22 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: echo "Run E2E tests here for << parameters.environment >>"
+      - run: echo "Run E2E tests pack1 here for << parameters.environment >>"
       - slack/notify-on-failure
+
+  e2e_tests_pack2:
+    working_directory: ~/src
+    parameters:
+      environment:
+        type: string
+    docker:
+      - image: circleci/node:14
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: echo "Run E2E tests pack2 here for << parameters.environment >>"
+      - slack/notify-on-failure
+
 
   performance_tests:
     working_directory: ~/src
