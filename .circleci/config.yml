@@ -23,8 +23,6 @@
 # And again i had to do some assumptions - we deploy to stage immediately after merging, then we want to deploy to preprod/prod in controlled way - with approvals.
 
 version: 2.1
-orbs:
-  slack: circleci/slack@3.4.2
 workflows:
   version: 2.1
   master:
@@ -377,3 +375,7 @@ jobs:
           root: ~/
           paths:
             - src
+
+orbs:
+  slack: circleci/slack@3.4.2
+
