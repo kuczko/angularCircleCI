@@ -197,6 +197,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run quality tests here"
+      - slack/notify-on-failure
 
   unit_tests:
     working_directory: ~/src
@@ -206,6 +207,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run unit tests here"
+      - slack/notify-on-failure
 
   build:
     working_directory: ~/src
@@ -226,6 +228,7 @@ jobs:
       #- setup_remote_docker: 
       #   docker_layer_caching: true 
       - run: echo "docker build here"
+      - slack/notify-on-failure
 
   deploy:
     working_directory: ~/src
@@ -237,6 +240,7 @@ jobs:
     steps:
       - checkout
       - run: echo "Deploy to << parameters.environment >> environment"
+      - slack/notify-on-failure
 
   preconditions_check:
     working_directory: ~/
@@ -252,6 +256,7 @@ jobs:
           root: ~/
           paths:
             - preconditions
+      - slack/notify-on-failure
 
   lock_merge:
     docker:
@@ -261,6 +266,7 @@ jobs:
           at: ~/
       - run: echo "Check if current lock is connected with pipeline which is still running PR jobs"
       - run: echo "If not, release lock for that pipeline and set new lock"
+      - slack/notify-on-failure
 
   local_merge:
     working_directory: ~/src
@@ -274,6 +280,8 @@ jobs:
           root: ~/
           paths:
             - src
+      - slack/notify-on-failure
+
   do_merge:
     working_directory: ~/src
     docker:
@@ -282,6 +290,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Merge PR via Github API"
+      - slack/notify-on-failure
 
   functional_tests:
     working_directory: ~/src
@@ -294,6 +303,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run functional tests here for << parameters.environment >>"
+      - slack/notify-on-failure
 
   integration_tests:
     working_directory: ~/src
@@ -306,6 +316,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run integration tests here for << parameters.environment >>"
+      - slack/notify-on-failure
 
   e2e_tests:
     working_directory: ~/src
@@ -318,6 +329,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run E2E tests here for << parameters.environment >>"
+      - slack/notify-on-failure
 
   performance_tests:
     working_directory: ~/src
@@ -330,6 +342,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run performance tests here for << parameters.environment >>"
+      - slack/notify-on-failure
 
   smoke_tests:
     working_directory: ~/src
@@ -342,6 +355,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "Run smoke tests here for << parameters.environment >>"
+      - slack/notify-on-failure
 
   mark_artifact_release:
     working_directory: ~/src
@@ -351,6 +365,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: echo "RC artifact should be changed to release artifact"
+      - slack/notify-on-failure
 
   code_checkout:
     working_directory: ~/src
@@ -374,3 +389,8 @@ jobs:
           root: ~/
           paths:
             - src
+      - slack/notify-on-failure
+
+orbs:
+  slack: circleci/slack@3.4.2
+

@@ -9,6 +9,9 @@ Things to consider are:
   - Added docker cache (commented out as plan does not support it)
   
 - how would you notify the team if something went wrong?
+  - Added slack notification for each job. Better version would be to create custom job, which would notify person merging change/making commit - it would limit spam on the 
+    notification channel.
+
 - how would you implement feature flags?
 - how do feature flags affect testing?
 - what is your roll back strategy?
