@@ -6,7 +6,7 @@ Things to consider are:
 - how would you optimize the build for speed?
   - Added workspace saving to not clone and apply git diff at each job step
   - Added npm modules caching
-
+  - Added docker cache (commented out as plan does not support it)
   
 - how would you notify the team if something went wrong?
 - how would you implement feature flags?
